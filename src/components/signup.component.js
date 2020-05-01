@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ZIMTHubSDK from '@zimt/sdk';
-import
+import { Redirect } from 'react-router-dom';
 
 const sdk = new ZIMTHubSDK({
     api: {

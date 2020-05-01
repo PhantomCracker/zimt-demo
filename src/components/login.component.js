@@ -16,10 +16,12 @@ export default class Login extends Component {
         this.state = {
             email: '',
             emailError: '',
-            organization: '',
+            personalName: '',
+            password: ''
         };
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
-        this.handleChangeOrganization = this.handleChangeOrganization.bind(this);
+        this.handleChangeName = this.handleChangeName.bind(this);
+        this.handleChangePassword = this.handleChangePassword.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -29,24 +31,47 @@ export default class Login extends Component {
             emailError: '',
         });
     }
-
-    handleChangeOrganization(event) {
+    handleChangeName(event) {
         this.setState({
-            organization: event.target.value,
+            personalName: event.target.value,
+        });
+    }
+    handleChangePassword(event) {
+        this.setState({
+            password: event.target.value,
         });
     }
 
 
+
     async handleSubmit(event) {
         event.preventDefault();
-        const accountExist = await this.checkIfTheUserExist(this.state.email);
-        console.log(accountExist.response);
-        if(accountExist.response === true) {
-            this.setState({
-                emailError: "This email is already in use"
-            })
-        }
-        else {
+        const searchUser = await sdk.accounts.search(
+        {
+          query: {
+            accounts: [
+              {
+                field: 'data.full_name',
+                operator: 'starts-with',
+                value: this.state.personalName,
+              },
+            ],
+          },
+          limit: 5
+        });
+        const userEmail = searchUser.response.map(x => {
+           return x.data.email;
+        });
+        const userName = searchUser.response.map(y => {
+            return y.data.full_name;
+        })
+        if(userEmail) {
+            if(userEmail == this.state.email && userName == this.state.personalName) {
+                console.log("User-ul s-a logat");
+            }
+            else {
+                console.log("User-ul nu a reusit sa se logeze");
+            }
         }
     }
 
@@ -65,19 +90,21 @@ export default class Login extends Component {
                 <h3>Sign In</h3>
 
                 <div className="form-group">
-                    <label>Organization name</label>
-                    <input type="text" className="form-control" placeholder="First name"
-                           value={this.state.organization} onChange={this.handleChangeOrganization} />
+                    <label>Your name</label>
+                    <input type="text" className="form-control" placeholder="Your name"
+                           value={this.state.personalName} onChange={this.handleChangeName} />
                 </div>
 
                 <div className="form-group">
                     <label>Email address</label>
-                    <input type="email" className="form-control" placeholder="Enter email" value={this.state.email} onChange={this.handleChangeEmail}/>
+                    <input type="email" className="form-control" placeholder="Enter email"
+                           value={this.state.email} onChange={this.handleChangeEmail}/>
                 </div>
 
                 <div className="form-group">
                     <label>Password</label>
-                    <input type="password" className="form-control" placeholder="Enter password" />
+                    <input type="password" className="form-control" placeholder="Enter password"
+                           value={this.state.password} onChange={this.handleChangePassword}/>
                 </div>
 
                 <div className="form-group">
