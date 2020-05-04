@@ -11,9 +11,17 @@ const sdk = new ZIMTHubSDK({
 
 export default class Dashboard extends Component {
 
+    async getAssets() {
+        const allAssets = await sdk.assets.getMany();
+        console.log(allAssets);
+    }
+
     render() {
         return (
-            <h2>Offers dashboard is coming soon</h2>
+            <div>
+                <h2>Offers dashboard is coming soon</h2>
+                <p onClick={() => this.getAssets()} >Check all assets</p>
+            </div>
         );
     }
 }

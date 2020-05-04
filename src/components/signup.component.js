@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ZIMTHubSDK from '@zimt/sdk';
-import { Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 const sdk = new ZIMTHubSDK({
     api: {
@@ -74,6 +74,7 @@ export default class SignUp extends Component {
               }
             });
         }
+        this.props.history.push('/offers');
     }
 
     async checkIfTheUserExist(email) {

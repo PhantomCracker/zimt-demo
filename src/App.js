@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Login from "./components/login.component";
 import SignUp from "./components/signup.component";
 import Dashboard from "./components/offers/dashboard.component";
+import CreateOffer from "./components/offers/createoffer.component";
 
 function App() {
   return (
@@ -31,7 +32,8 @@ function App() {
                   <div className="auth-inner">
                       <Switch>
                           <Route exact path='/' component={Dashboard} />
-                          <Route exact path='/offers' component={Dashboard} />
+                          <Route path='/offers' component={Dashboard} />
+                          <Route path='/create-offer' component={CreateOffer} />
                           <Route path="/sign-in" component={Login} />
                           <Route path="/sign-up" component={SignUp} />
                       </Switch>

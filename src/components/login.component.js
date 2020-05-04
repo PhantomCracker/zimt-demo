@@ -66,7 +66,7 @@ export default class Login extends Component {
             return y.data.full_name;
         })
         if(userEmail) {
-            if(userEmail == this.state.email && userName == this.state.personalName) {
+            if(userEmail === this.state.email && userName === this.state.personalName) {
                 console.log("User-ul s-a logat");
             }
             else {
