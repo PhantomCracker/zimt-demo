@@ -10,7 +10,7 @@ const sdk = new ZIMTHubSDK({
     apiKey: "0xb7CDD913b870a46B305b8c6e8B9EB46744f56F6F"
 });
 
-export default class CreateOffer extends Component {
+export default class UpdateOffer extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -21,6 +21,9 @@ export default class CreateOffer extends Component {
             commission: '',
             overprice: '',
             paymentDay: '',
+
+            assetId: '',
+            eventId: ''
         };
         this.handleChangeOfferName = this.handleChangeOfferName.bind(this);
         this.handleChangeActivePrice = this.handleChangeActivePrice.bind(this);
@@ -29,6 +32,10 @@ export default class CreateOffer extends Component {
         this.handleChangeCommission = this.handleChangeCommission.bind(this);
         this.handleChangeOverprice = this.handleChangeOverprice.bind(this);
         this.handleChangePaymentDay = this.handleChangePaymentDay.bind(this);
+    }
+
+    async componentDidMount() {
+        await this.getOffer();
     }
 
     handleChangeOfferName(event) {
@@ -68,11 +75,31 @@ export default class CreateOffer extends Component {
         });
     }
 
+    async getOffer()  {
+        const getAsset = await sdk.assets.get("0x024814d894ddb95f79fc828adc15d36cc2c88ca57a0cb760c1f87e4efe12cad0", { info: true });
+        console.log(getAsset);
+        this.setState({
+            assetId: getAsset.response.events[getAsset.response.events.length - 1].meta.asset_id,
+            eventId: getAsset.response.events[getAsset.response.events.length - 1].id,
+        });
 
-    async createOffer(event) {
+        const getEvent = await sdk.events.getEvent(this.state.assetId, this.state.eventId);
+        console.log(getEvent);
+
+        this.setState({
+            offerName: getEvent.response.data.name,
+            activePrice: getEvent.response.data.properties.activePrice,
+            category: getEvent.response.data.properties.category,
+            validity: getEvent.response.data.properties.validity,
+            commission: getEvent.response.data.properties.commission,
+            overprice: getEvent.response.data.properties.overprice,
+            paymentDay: getEvent.response.data.properties.paymentDay,
+        })
+    }
+
+    async updateOffer(event) {
         event.preventDefault();
-        const createAsset = await sdk.assets.create(sdk.assets.generateAsset());
-        const generateEvent = await sdk.events.generateEvent(createAsset.response.id, {
+        const generateEvent = await sdk.events.generateEvent(this.state.assetId, {
             type: "info",
             name: this.state.offerName,
             properties: {
@@ -86,15 +113,14 @@ export default class CreateOffer extends Component {
         });
         const createEvent = await sdk.events.createEvent(generateEvent.meta.asset_id, generateEvent);
         console.log(createEvent.meta.message);
-        console.log(createEvent);
         this.props.history.push('/offers');
     }
 
     render() {
         return (
             <form className="m-auto mt-5 pt-5" style={{maxWidth: "500px"}}
-                  onSubmit={(event) => this.createOffer(event)}>
-                <h3>Create offer</h3>
+                  onSubmit={(event) => this.updateOffer(event)}>
+                <h3>Update offer</h3>
                 <p onClick={() => console.log(this.state)}> Check state </p>
 
                 <div className="form-group">
@@ -105,7 +131,7 @@ export default class CreateOffer extends Component {
 
                 <div className="form-group">
                     <label>Active price</label>
-                    <input type="number" className="form-control" placeholder="Price"
+                    <input type="text" className="form-control" placeholder="Price"
                            value={this.state.activePrice} onChange={this.handleChangeActivePrice} />
                 </div>
 
@@ -140,7 +166,7 @@ export default class CreateOffer extends Component {
                            value={this.state.paymentDay} onChange={this.handleChangePaymentDay} />
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-block">Create offer</button>
+                <button type="submit" className="btn btn-primary btn-block">Update offer</button>
             </form>
         );
     }

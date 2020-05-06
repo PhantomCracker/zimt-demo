@@ -11,16 +11,37 @@ const sdk = new ZIMTHubSDK({
 
 export default class Dashboard extends Component {
 
-    async getAssets() {
+    async getUser() {
+        const result = await sdk.accounts.me();
+        return result.response.data.full_name;
+    }
+
+    async getOffers() {
         const allAssets = await sdk.assets.getMany();
-        console.log(allAssets);
+        let offers = [];
+        for(let i = 0; i < allAssets.response.length; i++) {
+            offers.push(await sdk.assets.get(allAssets.response[i].id, { info: true }))
+        }
+        let offersProperties = [];
+        offers.map(offer => {
+            if(offer.response.info.data != undefined) {
+                offer = offer.response.info.data;
+                offersProperties.push(offer);
+            }
+        });
+        console.log(offersProperties);
+        return offersProperties;
+    }
+
+    async componentDidMount() {
+        await this.getOffers();
     }
 
     render() {
         return (
             <div>
-                <h2>Offers dashboard is coming soon</h2>
-                <p onClick={() => this.getAssets()} >Check all assets</p>
+                <h2 className="text-center">Offers list</h2>
+                {/*{this.getOffers()}*/}
             </div>
         );
     }
