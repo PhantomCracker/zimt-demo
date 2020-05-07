@@ -131,7 +131,7 @@ export default class UpdateOffer extends Component {
 
                 <div className="form-group">
                     <label>Active price</label>
-                    <input type="text" className="form-control" placeholder="Price"
+                    <input type="number" className="form-control" placeholder="Price"
                            value={this.state.activePrice} onChange={this.handleChangeActivePrice} />
                 </div>
 
